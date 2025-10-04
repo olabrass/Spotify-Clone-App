@@ -56,9 +56,29 @@ const loginUser = asyncHandler(async(req, res)=>{
     res.status(StatusCodes.UNAUTHORIZED);
     throw new Error("Invalid Email or Password")
    }
-})
+});
+
+//@desc - Get User profile
+//@route - GET '/api/users/profile'
+//@Access - protected
+const getUserProfile = asyncHandler(async(req, res)=>{
+    // Find User
+    const user = await User.findById(req.user._id).select('-password');
+    // Check is user is available
+    if(user){
+        res.status(StatusCodes.OK).json(user);
+    }
+});
+// Update user profile
+// Toggle like Song
+// Toggle follow artists
+// Toggle follow playlist
+// Get users
+
+
 
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    getUserProfile
 };
