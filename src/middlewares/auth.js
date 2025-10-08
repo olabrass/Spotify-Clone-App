@@ -1,6 +1,7 @@
 const asyncHandler = require('express-async-handler');
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const { StatusCodes } = require('http-status-codes');
 
 
 // Middleware to protect route - Check JWT token and set re.user
@@ -23,6 +24,9 @@ const protect = asyncHandler(async(req, res, next)=>{
             res.status(StatusCodes.UNAUTHORIZED);
             throw new Error('Not Authorized, Please Login');
         }
+    }else{
+        res.status(StatusCodes.NOT_FOUND);
+        throw new Error('User Not Found');
     }
 });
 

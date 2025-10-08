@@ -11,7 +11,7 @@ const albumSchema = new mongoose.Schema({
     artist:{
         type:mongoose.Schema.Types.ObjectId,
         required:[true, "Artist is required"],
-        ref: Artist
+        ref: 'Artist'
     },
 
     releasedDate:{
