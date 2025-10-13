@@ -5,31 +5,53 @@ const { StatusCodes } = require('http-status-codes');
 
 
 // Middleware to protect route - Check JWT token and set re.user
-const protect = asyncHandler(async(req, res, next)=>{
+const protect = asyncHandler(async (req, res, next) => {
     let token;
-    // Check if token exists in the header
-    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
-        try{
-            // Get the token from the header
-            token = req.headers.authorization.split(" ")[1];
-            // Verify token
-            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY)
-            // console.log(decoded);
-            // set req.user to the user found in the token
-            req.user = await User.findById(decoded.id).select('-password');
-            next();
 
-        }catch(error){
+    if (
+        req.headers.authorization &&
+        req.headers.authorization.startsWith('Bearer')
+    ) {
+        try {
+            // Extract token
+            token = req.headers.authorization.split(' ')[1];
+
+            // Verify token
+            const decoded = jwt.verify(token, process.env.JWT_SECRET_KEY);
+
+            // Find user
+            const user = await User.findById(decoded.id).select('-password');
+
+            if (!user) {
+                res.status(StatusCodes.UNAUTHORIZED);
+                throw new Error('User no longer exists');
+            }
+
+            req.user = user;
+            next();
+        } catch (error) {
             console.log(error);
             res.status(StatusCodes.UNAUTHORIZED);
-            throw new Error('Not Authorized, Please Login');
+            throw new Error('Not authorized, token failed or expired');
         }
-    }else{
-        res.status(StatusCodes.NOT_FOUND);
-        throw new Error('User Not Found');
+    } else {
+        res.status(StatusCodes.UNAUTHORIZED);
+        throw new Error('No token provided, please login');
     }
 });
 
+
+// check if a user is an admin
+const isAdmin = asyncHandler(async(req, res, next)=>{
+    if(req.user && req.user.isAdmin){
+        next();
+    }else{
+        res.status(StatusCodes.FORBIDDEN);
+        throw new Error('Access denied, you are not an admin');
+    }
+})
+
 module.exports ={ 
     protect,
+    isAdmin
 }

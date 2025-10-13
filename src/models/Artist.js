@@ -44,7 +44,7 @@ const artistSchema = new mongoose.Schema({
         }
     ], 
 
-    isVerifies:{
+    isVerified:{
         type: Boolean,
         default: false
     }

@@ -2,6 +2,7 @@ const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
 const userRouter = require('./routes/userRoutes');
+const artistRouter = require('./routes/artistRoutes');
 const { StatusCodes } = require('http-status-codes');
 
 dotenv.config();
@@ -13,6 +14,7 @@ mongoose.connect(process.env.DB_URI).then(console.log('Database Connected Succes
 
 // Route
 app.use('/api/users', userRouter);
+app.use('/api/artists', artistRouter);
 
 // Error Handler
 app.use((req, res, next)=>{

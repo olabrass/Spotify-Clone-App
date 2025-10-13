@@ -73,9 +73,12 @@ const getUserProfile = asyncHandler(async(req, res)=>{
     .populate('likedAlbums', 'title artist coverImage')
     .populate('followedArtists', 'name image')
     .populate('followedPlaylists', 'name creator coverImage');
-    // Check is user is available
+    // Check if user is available
     if(user){
-        res.status(StatusCodes.OK).json(user);
+        res.status(StatusCodes.OK).json({
+            totalUser: user.length,
+            user
+        });
     }else{
         res.status(StatusCodes.NOT_FOUND);
         throw new Error('User not Found');
